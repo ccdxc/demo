@@ -21,7 +21,7 @@ using namespace std;
 #define MAX_EVENTS 500    
 struct myevent_s    
 {    
-    int fd;    // 文件描述符  
+    int fd;    
     void (*call_back)(int fd, int events, void *arg);    
     int events;    
     void *arg;    
@@ -77,13 +77,13 @@ struct epoll_event {
 };
 
 events可以是以下几个宏的集合：
-EPOLLIN  ：表示对应的文件描述符可以读（包括对端SOCKET正常关闭）；
-EPOLLOUT ：表示对应的文件描述符可以写；
-EPOLLPRI ：表示对应的文件描述符有紧急的数据可读（这里应该表示有带外数据到来）；
-EPOLLERR ：表示对应的文件描述符发生错误；
-EPOLLHUP ：表示对应的文件描述符被挂断；
-EPOLLET ： 将EPOLL设为边缘触发(Edge Triggered)模式，这是相对于水平触发(Level Triggered)来说的。
-EPOLLONESHOT ：只监听一次事件，当监听完这次事件之后，如果还需要继续监听这个socket的话，需要再次把这个socket加入到EPOLL队列里
+EPOLLIN ：表示对应的文件描述符可以读（包括对端SOCKET正常关闭）；
+EPOLLOUT：表示对应的文件描述符可以写；
+EPOLLPRI：表示对应的文件描述符有紧急的数据可读（这里应该表示有带外数据到来）；
+EPOLLERR：表示对应的文件描述符发生错误；
+EPOLLHUP：表示对应的文件描述符被挂断；
+EPOLLET： 将EPOLL设为边缘触发(Edge Triggered)模式，这是相对于水平触发(Level Triggered)来说的。
+EPOLLONESHOT：只监听一次事件，当监听完这次事件之后，如果还需要继续监听这个socket的话，需要再次把这个socket加入到EPOLL队列里
 
 
 */
@@ -94,6 +94,18 @@ EPOLLONESHOT ：只监听一次事件，当监听完这次事件之后，如果�
     else    
         printf("Event Add OK[fd=%d], op=%d, evnets[%0X]\n", ev->fd, op, events);    
 }    
+#define P(...) printf("\t%s : %s \n", #__VA_ARGS__, __VA_ARGS__);
+#define PI(...) printf("\t%s : %d \n", #__VA_ARGS__, __VA_ARGS__);
+void show(const char *fuc,myevent_s * t){
+    printf("\t%s\n",fuc);
+    PI(t->fd);
+    P(t->buff);
+    PI(t->len);
+    PI(t->s_offset);
+}
+
+
+
 // delete an event from epoll    
 void EventDel(int epollFd, myevent_s *ev)    
 {    
@@ -134,7 +146,6 @@ void AcceptConn(int fd, int events, void *arg)
         if(i == MAX_EVENTS)    
         {    
             printf("%s:max connection limit[%d].", __func__, MAX_EVENTS);    
-			close(nfd);
             break;    
         }    
         // set nonblocking  
@@ -154,6 +165,7 @@ void AcceptConn(int fd, int events, void *arg)
 // receive data    
 void RecvData(int fd, int events, void *arg)    
 {    
+    struct myevent_s t2;
     struct myevent_s *ev = (struct myevent_s*)arg;    
     int len;    
     // receive data  
@@ -164,9 +176,13 @@ void RecvData(int fd, int events, void *arg)
         ev->len += len;  
         ev->buff[len] = '\0';    
         printf("C[%d]:%s\n", fd, ev->buff);    
+        t2=*ev;
         // change to send event    
         EventSet(ev, fd, SendData, ev);    
-        EventAdd(g_epollFd, EPOLLOUT, ev);    //EPOLLOUT ：表示对应的文件描述符可以写；
+        ev->len = t2.len;
+        strcpy(ev->buff, t2.buff);
+        EventAdd(g_epollFd, EPOLLOUT, ev);    
+        show(__FUNCTION__,ev);
     }    
     else if(len == 0)    
     {    
@@ -184,6 +200,9 @@ void SendData(int fd, int events, void *arg)
 {    
     struct myevent_s *ev = (struct myevent_s*)arg;    
     int len;    
+
+    show(__FUNCTION__,ev);
+
     // send data    
     len = send(fd, ev->buff + ev->s_offset, ev->len - ev->s_offset, 0);  
     if(len > 0)    
@@ -198,12 +217,15 @@ void SendData(int fd, int events, void *arg)
             EventAdd(g_epollFd, EPOLLIN, ev);    
         }  
     }    
-    else    
+    else if(len < 0 )   
     {    
-        printf("send[fd=%d] error[%d] %s\n", fd, errno, strerror(errno));   
+        printf("[failed] send[fd=%d] error[%d] %s\n", fd, errno, strerror(errno));    
         close(ev->fd);    
         EventDel(g_epollFd, ev);    
- 
+    }else {
+        printf("%s: len == 0 \n", __FUNCTION__);
+        close(ev->fd);
+        EventDel(g_epollFd, ev);
     }    
 }    
 void InitListenSocket(int epollFd, short port)    
@@ -225,7 +247,7 @@ void InitListenSocket(int epollFd, short port)
 }    
 int main(int argc, char **argv)    
 {    
-    unsigned short port = 12345; // default port    
+    unsigned short port = 6666; // default port    
     if(argc == 2){    
         port = atoi(argv[1]);    
     }    
@@ -246,7 +268,7 @@ int main(int argc, char **argv)
     while(1){    
         // a simple timeout check here, every time 100, better to use a mini-heap, and add timer event    
         long now = time(NULL);    
-        for(int i = 0; i < 100; i++, checkPos++) // doesn't check listen fd    
+        for(int i = 0; i < MAX_EVENTS; i++, checkPos++) // doesn't check listen fd    
         {    
             if(checkPos == MAX_EVENTS) checkPos = 0; // recycle    
             if(g_Events[checkPos].status != 1) continue;    
@@ -261,11 +283,7 @@ int main(int argc, char **argv)
         // wait for events to happen    
 /*
 3. int epoll_wait(int epfd, struct epoll_event * events, int maxevents, int timeout);
-等待事件的产生，类似于select()调用。
-参数events是分配好的epoll_event结构体数组，epoll将会把发生的事件赋值到events数组中（events不可以是空指针，内核只负责把数据复制到这个events数组中，不会去帮助我们在用户态中分配内存）
-maxevents告之内核这个events有多大，这个 maxevents的值不能大于创建epoll_create()时的size，
-参数timeout是超时时间（毫秒，0会立即返回，-1将不确定，也有说法说是永久阻塞）。
-该函数返回需要处理的事件数目，如返回0表示已超时。
+等待事件的产生，类似于select()调用。参数events用来从内核得到事件的集合，maxevents告之内核这个events有多大，这个 maxevents的值不能大于创建epoll_create()时的size，参数timeout是超时时间（毫秒，0会立即返回，-1将不确定，也有说法说是永久阻塞）。该函数返回需要处理的事件数目，如返回0表示已超时。
 
 */
         int fds = epoll_wait(g_epollFd, events, MAX_EVENTS, 1000);    

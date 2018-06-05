@@ -92,8 +92,11 @@ int main(int argc, char **argv)
                     close(sockfd);  
                     FD_CLR(sockfd, &allset);  
                     client[i] = -1;  
-                } else  
+                } else { 
+                    buf[n] = '\0'; 
                     write(sockfd, buf, n);  
+                    printf("[client:] %s",buf);
+                 }
 
                 if (--nready <= 0)  
                     break;              /* no more readable descriptors */  
