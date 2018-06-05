@@ -72,7 +72,7 @@ int main(int argc, char *argv[])
 
     for(; ;) {
         nfds = epoll_wait(epfd, events, 20, 500);
-        printf("---------epoll_wait return ...[ret]:%d\n",nfds);
+        //printf("---------epoll_wait return ...[ret]:%d\n",nfds);  // gcc 添加-g程序就不会优化  ，也就有返回了。。
         for(i = 0; i < nfds; ++i) {
             if(events[i].data.fd == listenfd) {
                 printf("accept connection, fd is %d\n", listenfd);
@@ -102,7 +102,7 @@ int main(int argc, char *argv[])
                         printf("readline error");
                     }
                 } else if(n == 0) {
-                    printf("client close len == 0");
+                    printf("client close len == 0\n");
                     close(sockfd);
                     events[i].data.fd = -1;
                 }else {  // >0 
