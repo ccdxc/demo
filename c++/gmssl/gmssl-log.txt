@@ -1,4 +1,4 @@
-默认情况下，openssl 输出格式为 PKCS#1-PEM
+﻿默认情况下，openssl 输出格式为 PKCS#1-PEM
 生成RSA私钥(无加密)
 	gmssl genrsa -out rsa_private.key 2048
 生成RSA公钥
@@ -13,3 +13,11 @@
 	gmssl req -newkey rsa:2048 -nodes -keyout rsa_private.key -x509 -days 365 -out cert.crt
 KEY转pem
 	openssl rsa -in serverb.key -outform PEM -out serverb.pem
+
+生成自签证书和二级证书:
+	openssl genrsa  -out root.key 4096
+	openssl req -new -x509 -days 3650 -key root.key -out root.crt
+
+	openssl genrsa  -out server.key 4096
+	openssl req -new -key server.key -out server.csr 
+	openssl x509 -req -days 365 -in server.csr -CA root.crt -CAkey root.key -set_serial 01 -out server.crt
