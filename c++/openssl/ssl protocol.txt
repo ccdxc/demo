@@ -1,5 +1,6 @@
-site:
+﻿site:
 	https://blog.csdn.net/s030602122/article/details/53538383
+	https://blog.csdn.net/tterminator/article/details/50675540
 
 SSL握手协议报文格式如下
 1. 类型(Type)(1字节):
