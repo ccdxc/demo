@@ -38,3 +38,17 @@ demo:
 			gmssl req -new -key sm2_enc.key -out sm2_enc.req
 		使用根证书进行签名
 			gmssl x509 -req -days 3650 -in sm2_enc.req -CA root.crt -CAkey root.key -set_serial 01 -out sm2_enc.crt
+			
+			
+	测试证书
+		server:
+			openssl s_server -msg -verify -tls1_2 -state -cert rsa_enc.crt -key rsa_enc.key -accept 18444
+		client:
+			openssl s_client -msg -verify -tls1_2  -state -showcerts -cert rsa_enc_2.crt -key rsa_enc_2.key -connect localhost:18444
+			
+			
+			
+			
+			
+		
+		
