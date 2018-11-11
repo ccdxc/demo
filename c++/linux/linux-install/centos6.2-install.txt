@@ -74,10 +74,6 @@ gcc:
 gdb:
 	gdb调试提示:Missing separate debuginfos, use: debuginfo-install glibc-2.12-1.......
 
-	但是按照大多数的教程做下来,安装各种库 还是会出现这种情况
-
-	怎么办?
-
 	主要原因是gcc版本太高，gdb版本太低，升级以下gdb版本就好了。
 
 	1.下载源码包：
@@ -101,7 +97,8 @@ gdb:
 
 	8 发现还是老版本7.2 怎么办
 
-	查了下GDB的默认安装目录是/usr/loca/bin，export命令查看了下我机器默认的环境变量是/usr/bin，于是备份旧版本的gdb程序后，将usr/loca/bin下新的gdb可执行程序复制过去。gdb -v终于显示版本7.8。调试一下程序，原来的bug不见了。
+	查了下GDB的默认安装目录是/usr/loca/bin，export命令查看了下我机器默认的环境变量是/usr/bin，
+	于是备份旧版本的gdb程序后，将usr/loca/bin下新的gdb可执行程序复制过去。gdb -v终于显示版本7.8。调试一下程序，原来的bug不见了。
 
 	done
 
