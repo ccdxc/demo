@@ -94,6 +94,9 @@ gdb:
 	  make
 	  make install
 	  注意：默认安装在/usr/local/bin目录下，后面自己改环境变量就可以直接用了。
+	
+	问题：WARNING: 'makeinfo' is missing on your system.
+	方法：yum install texinfo
 
 	8 发现还是老版本7.2 怎么办
 
