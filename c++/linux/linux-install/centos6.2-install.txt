@@ -71,4 +71,5 @@ gcc:
 
 	6¡¢sudo make install
 	
-	
+libuv
+	base: yum install automake autoconf libtool
