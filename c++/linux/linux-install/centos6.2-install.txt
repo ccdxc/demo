@@ -70,6 +70,43 @@ gcc:
 	5、make
 
 	6、sudo make install
-	
+
+gdb:
+	gdb调试提示:Missing separate debuginfos, use: debuginfo-install glibc-2.12-1.......
+
+	但是按照大多数的教程做下来,安装各种库 还是会出现这种情况
+
+	怎么办?
+
+	主要原因是gcc版本太高，gdb版本太低，升级以下gdb版本就好了。
+
+	1.下载源码包：
+	   wget http://ftp.nluug.nl/gnu/gdb/gdb-7.8.2.tar.gz
+	 2.解压源码包：
+	   tar -zxvf gdb-7.8.2.tar.gz
+	 3../configure
+	4. make
+	   如果提示缺少一个库：configure: error: no termcap library found
+	5.下载termcap库源码：
+	   wget ftp://ftp.gnu.org/gnu/termcap/termcap-1.3.1.tar.gz
+	6.编译安装termcap库：
+	  ./configure
+	  make
+	 make install
+	7.重新跳到gdb源码目录编译安装：
+	  ./config
+	  make
+	  make install
+	  注意：默认安装在/usr/local/bin目录下，后面自己改环境变量就可以直接用了。
+
+	8 发现还是老版本7.2 怎么办
+
+	查了下GDB的默认安装目录是/usr/loca/bin，export命令查看了下我机器默认的环境变量是/usr/bin，于是备份旧版本的gdb程序后，将usr/loca/bin下新的gdb可执行程序复制过去。gdb -v终于显示版本7.8。调试一下程序，原来的bug不见了。
+
+	done
+
+
 libuv
 	base: yum install automake autoconf libtool
+
+
