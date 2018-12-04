@@ -1,0 +1,16 @@
+https://github.com/uNetworking/uWebSockets/
+
+zlib  
+	ÐÞ¸ÄZEXPORT ¿Õ Îª WINAPI 
+	#ifndef ZEXPORT
+	#  define ZEXPORT WINAPI
+	#endif
+	
+	zlib-1.2.11\contrib\vstudio\vc14  vs 2015
+
+libuv:
+	https://github.com/svn2github/gyp
+	vcbuild.bat
+
+openssl:
+	
