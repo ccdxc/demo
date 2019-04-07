@@ -1,4 +1,4 @@
-vs2013 yasm mingw sdl
+﻿vs2013 yasm mingw sdl
 
 downlaod:
  https://www.libsdl.org/release/
@@ -24,3 +24,4 @@ https://www.libsdl.org/release/SDL2-devel-2.0.8-mingw.tar.gz
 ./configure --enable-static --disable-shared --enable-gpl --enable-version3 --enable-sdl --enable-debug=3 --disable-optimizations --disable-mmx --prefix=./mingw32-static-sdl
 
 
+./configure --enable-gpl --enable-version3 --enable-sdl2 --enable-fontconfig --enable-gnutls --enable-iconv --enable-libass  --enable-libbluray --enable-libfreetype --enable-libmp3lame --enable-libopencore-amrnb --enable-libopencore-amrwb --enable-libopenjpeg --enable-libopus --enable-libshine --enable-libsnappy --enable-libsoxr --enable-libtheora --enable-libtwolame --enable-libvpx --enable-libwavpack --enable-libwebp --enable-libx264 --enable-libx265 --enable-libxml2 --enable-libzimg --enable-lzma --enable-zlib  --enable-libvidstab --enable-libvorbis --enable-libvo-amrwbenc --enable-libmysofa --enable-libspeex --enable-libxvid --enable-libaom --enable-libmfx --enable-amf --enable-ffnvcodec --enable-cuvid --enable-d3d11va --enable-nvenc --enable-nvdec --enable-dxva2 --enable-avisynth --enable-libopenmpt
